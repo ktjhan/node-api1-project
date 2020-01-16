@@ -23,17 +23,21 @@ server.get('/api/users', (req, res) => {
 
 // Create a Get Req
 server.get('/api/users/:id', (req, res) => {
-    const id = req.params.id;
-    db.findById(id) //Returns a promise
-      .then(users => {
-        res.status(200).json(users)
-      })
-      .catch(error => {
-        console.log(error)
-        //handle errors
-        res.status(404).json({ error: "The user with the specified ID does not exist." })
+  const { id } = req.params;
+  db.findById(id)
+    .then(user => {
+      console.log("user", user);
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({error: "The user with the specified ID does not exist."});
+      }
     })
-})
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({error: "The user information could not be retrieved."});
+    });
+});
 
 // // Create a Post
 server.post('/api/users', (req, res) => {
@@ -112,7 +116,7 @@ server.delete('/api/users/:id', (req, res) => {
 });
 
 // // Update a Hub: extra exercise
-const port= 8000;
+const port = process.env.PORT || 8000;
 server.listen(port, () => console.log(`\n ** api on port: ${port}** \n`));
 //type:"mpm i express (no quotes to install the express library"
 // to run the server type: npm run server
